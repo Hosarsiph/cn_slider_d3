@@ -1,0 +1,41 @@
+
+body {
+  font: 12px sans-serif;
+}
+
+path {
+  stroke-width: 0.25px;
+  stroke: white;
+  fill: #999;
+  cursor: pointer;
+}
+
+path.q0-5 {
+  fill: #006837;
+}
+
+path.q1-5 {
+  fill: #31a354;
+}
+
+path.q2-5 {
+  fill: #78c679;
+}
+
+path.q3-5 {
+  fill: #c2e699;
+}
+
+path.q4-5 {
+  fill: #ffffcc;
+}
+
+div.tooltip {
+  position: absolute;
+  background-color: white;
+  border: 1px solid black;
+  color: black;
+  font-weight: bold;
+  padding: 4px 8px;
+  display: none;
+}
