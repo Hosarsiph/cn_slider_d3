@@ -15,7 +15,7 @@ var path = d3.geo.path()
     .projection(projection);
 
 //Create an SVG
-var svg = d3.select("body").append("svg")
+var svg = d3.select("#map").append("svg")
     .attr("width", width)
     .attr("height", height);
 
@@ -29,17 +29,67 @@ var color = d3.scale.quantize()
     .range(d3.range(5).map(function(i) { return "q" + i + "-5"; }));
 
 //Create a tooltip, hidden at the start
-var tooltip = d3.select("body").append("div").attr("class","tooltip");
+var tooltip = d3.select("#map").append("div").attr("class","tooltip");
+
+
 
 //Keeps track of currently zoomed feature
 var centered;
 
+function play() {
+
+var slider_time = ["CN_T1", "CN_T2", "CN_T3", "CN_T4", "CN_T5"]
+
+essai = d3.slider()
+        .scale(d3.scale.ordinal().domain(slider_time).rangePoints([0, 1], 0.5)).axis(d3.svg.axis()).snap(true).value(slider_time[0]);
+        d3.select('#slider12').call(essai);
+
+
+d3.json("data/CN.topojson",function(error,geodata) {
+  if (error) return console.log(error); //unknown error, check the console
+  //Create a path for each map feature in the data
+
+essai.on("slide", function (evt, value) {
+         d3.select('#slider3text').text(value);
+         return console.log(value);
+         })
+
+var sld = features.selectAll("path")
+          .data(topojson.feature(geodata,geodata.objects.collection).features) //generate features from TopoJSON
+          sld.enter()
+          .append("path")
+          sld.attr("d",path)
+          sld.attr("class", function(d) {
+                              // console.log(slider_time[0]);
+                              // console.log(sld);
+                              var valor = d.properties[slider_time[0]];
+                              return (typeof color(valor) == "string" ? color(valor) : "");
+                            })
+
+      .on("mouseover",showTooltip)
+      .on("mousemove",moveTooltip)
+      .on("mouseout",hideTooltip)
+      .on("click",clicked)
+
+      sld.exit().remove()
+      sld.transition()
+      .duration(800);
+  });
+}
+window.onload = play
+
+/*
 function slider() {
 
   var propiedades = document.getElementById("status").value;
-  d3.json("CN.topojson",function(error,geodata) {
-    if (error) return console.log(error); //unknown error, check the console
+  var slider_time = ["CN_T1", "CN_T2", "CN_T3", "CN_T4", "CN_T5"]
 
+  essai = d3.slider().scale(d3.scale.ordinal().domain(slider_time).rangePoints([0, 1], 0.5)).axis(d3.svg.axis()).snap(true).value("CN_T1");
+      d3.select('#slider12').call(essai);
+  console.log(slider_time);
+
+  d3.json("data/CN.topojson",function(error,geodata) {
+    if (error) return console.log(error); //unknown error, check the console
     //Create a path for each map feature in the data
     var sld = features.selectAll("path")
       .data(topojson.feature(geodata,geodata.objects.collection).features) //generate features from TopoJSON
@@ -47,7 +97,7 @@ function slider() {
       .append("path")
       sld.attr("d",path)
       sld.attr("class", function(d) {
-                      var valor = d.properties[propiedades];
+                      var valor = d.properties[slider_time[1]];
                       return (typeof color(valor) == "string" ? color(valor) : "");
                     })
 
@@ -55,10 +105,15 @@ function slider() {
       .on("mousemove",moveTooltip)
       .on("mouseout",hideTooltip)
       .on("click",clicked)
-      sld.exit().remove();
+
+      sld.exit().remove()
+      sld.transition()
+      .duration(800);
   });
 }
 window.onload = slider
+*/
+
 
 // Zoom to feature on click
 function clicked(d,i) {
